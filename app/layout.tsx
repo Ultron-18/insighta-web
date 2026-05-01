@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Insighta Labs+",
-  description: "Secure profile intelligence platform",
+  description: "Secure Profile Intelligence Platform",
 };
 
 export default function RootLayout({
