@@ -12,10 +12,16 @@ export default function AccountPage() {
     api.get('/auth/me')
       .then(res => setUser(res.data.user))
       .catch(() => router.push('/login'));
-  }, []);
+  }, [router]);
 
   const handleLogout = async () => {
-    await api.post('/auth/logout', {});
+    try {
+      const refreshToken = localStorage.getItem('refresh_token');
+      await api.post('/auth/logout', { refresh_token: refreshToken });
+    } catch {}
+    
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
     router.push('/login');
   };
 
