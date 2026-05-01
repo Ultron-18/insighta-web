@@ -6,19 +6,28 @@ import api from '../../lib/api';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [stats, setStats] = useState({ total: 0, male: 0, female: 0 });
+  const [stats, setStats] = useState({ total: 0 });
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
+    // Capture tokens from URL after OAuth redirect
+    const params = new URLSearchParams(window.location.search);
+    const accessToken = params.get('access_token');
+    const refreshToken = params.get('refresh_token');
+
+    if (accessToken) {
+      localStorage.setItem('access_token', accessToken);
+      localStorage.setItem('refresh_token', refreshToken || '');
+      window.history.replaceState({}, '', '/dashboard');
+    }
+
     const fetchData = async () => {
       try {
         const [profilesRes, userRes] = await Promise.all([
           api.get('/api/profiles'),
           api.get('/auth/me'),
         ]);
-
-        const profiles = profilesRes.data;
-        setStats({ total: profiles.total, male: 0, female: 0 });
+        setStats({ total: profilesRes.data.total });
         setUser(userRes.data.user);
       } catch {
         router.push('/login');
@@ -60,6 +69,12 @@ export default function DashboardPage() {
           className="bg-gray-800 hover:bg-gray-700 px-6 py-3 rounded-xl font-semibold"
         >
           Search
+        </button>
+        <button
+          onClick={() => router.push('/account')}
+          className="bg-gray-800 hover:bg-gray-700 px-6 py-3 rounded-xl font-semibold"
+        >
+          Account
         </button>
       </div>
     </div>
